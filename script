@@ -1,0 +1,86 @@
+#!/bin/bash
+
+options()
+{
+	echo "Opciók: "
+	echo  "-ö összeadás"
+        echo  "-k kivonás"
+        echo  "-o osztás"
+        echo  "-s szorzás"
+        echo  "-d fact irás"
+        echo  "-f random fact"
+	echo  "-v szó keresés"
+        echo  "-m date"
+        echo  "-p password generálás"
+        echo  "-e end"
+}
+
+while getopts :akosdfv:mpe opt
+ do
+  case $opt in
+  a)
+	read -p "Add meg az első számot!: " v1
+	read -p "Add meg a második számot!: " v2
+	echo "A két szám összege: $(($v1+$v2))"
+	;;
+
+  k)
+	read -p "Add meg az első számot!: " v1
+        read -p "Add meg a második számot!: " v2
+	echo "A két szám különbsége: $(($v1-$v2))"
+	;;
+
+  o)
+	read -p "Add meg az első számot!: " v1
+        read -p "Add meg a második számot!: " v2
+	echo "A két szám hányadosa: $(($v1/$v2))"
+	;;
+
+  s)
+	read -p "Add meg az első számot!: " v1
+        read -p "Add meg a második számot!: " v2
+	echo "A két szám szorzata: $(($v1*v2))"
+	;;
+
+  d)
+	curl -H "Accept: application/json" https://uselessfacts.jsph.pl/random.json?language=en -o fact.json
+	exit
+	;;
+
+  f)
+	if [ ! -f fact.json ]
+	then
+	  echo "A random fact nem létezik!"
+	else
+	  cat fact.json | jq .text | tr -d "\""
+	fi
+	exit
+	;;
+
+  v)
+	cat fact.json | jq .text | grep $OPTARG
+	exit
+	;;
+  m)
+	datum=$(date +%F)
+	echo "Mai dátum: $datum"
+	;;
+
+  p)
+	read -p "Add meg a karakterek számát!: " v1
+	read -p "Add meg hány jelszót szeretnél!:" v2
+	pwgen "$v1" "$v2"
+	;;
+
+  e)
+	echo "Kilépés folyamatban...."
+	break
+	;;
+  *)
+	echo "Helytelen opció $REPLY"
+	exit
+	;;
+ esac
+done
+
+
